@@ -16,11 +16,11 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MainController : ControllerBase
+    public class FridgesController : ControllerBase
     { 
         private readonly FridgeDBContext _context;
 
-        public MainController(FridgeDBContext context)
+        public FridgesController(FridgeDBContext context)
         {
             _context = context;
         }
@@ -40,7 +40,6 @@ namespace WebAPI.Controllers
         {
             return await _context.FridgeProducts.ToListAsync();
         }
-
 
         // POST: FridgeProducts
         [HttpPost("PostFridgeProducts")]
@@ -72,6 +71,5 @@ namespace WebAPI.Controllers
             await _context.SaveChangesAsync();
             return Ok(fridge);
         }
-
     }
 }
