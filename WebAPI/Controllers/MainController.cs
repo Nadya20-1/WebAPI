@@ -13,7 +13,7 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MainController : Controller
+    public class MainController : ControllerBase
     { 
         private readonly ILogger<MainController> _logger;
         private readonly FridgeDBContext _context;
@@ -29,24 +29,23 @@ namespace WebAPI.Controllers
         }
 
         // GET: Fridge
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fridge>>> GetFridge()
+        [HttpGet("GetFridge")]
+        public async Task<ActionResult<IEnumerable<Fridge>>> GetFridgeAsync()
         {
             return await _context.Fridges.ToListAsync();
         }
 
         // GET: FridgeProduct
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<FridgeProduct>>> GetFridgeProduct()
+        [HttpGet("GetFridgeProduct")]
+        public async Task<ActionResult<IEnumerable<FridgeProduct>>> GetFridgeProductAsync()
         {
             return await _context.FridgeProducts.ToListAsync();
         }
 
 
         // POST: Product/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PostProducts([Bind("Id,Name,DefaultQuantity")] Product product)
+        [HttpPost("PostProducts")]
+        public async Task<IActionResult> PostProductsAsync([Bind("Id,Name,DefaultQuantity")] Product product)
         {
             _context.Add(product);
             await _context.SaveChangesAsync();
@@ -54,9 +53,8 @@ namespace WebAPI.Controllers
         }
 
         // POST: Product/Delete/5
-        [HttpDelete, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteProducts(int id)
+        [HttpDelete("DeleteProducts"), ActionName("Delete")]
+        public async Task<IActionResult> DeleteProductsAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
@@ -65,9 +63,8 @@ namespace WebAPI.Controllers
         }
 
         // POST: Fridge
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateFridge([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
+        [HttpPost("UpdateFridge")]
+        public async Task<IActionResult> UpdateFridgeAsync([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
         {
             _context.Update(fridge);
             await _context.SaveChangesAsync();
