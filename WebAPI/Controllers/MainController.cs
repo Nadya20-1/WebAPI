@@ -19,12 +19,10 @@ namespace WebAPI.Controllers
     public class MainController : ControllerBase
     { 
         private readonly FridgeDBContext _context;
-        private IOptions<DbConnection> _connectionSettings;
 
-        public MainController(FridgeDBContext context, IOptions<DbConnection> connectionSettings)
+        public MainController(FridgeDBContext context)
         {
             _context = context;
-            _connectionSettings = connectionSettings;
         }
 
         // GET: Fridge
@@ -35,8 +33,8 @@ namespace WebAPI.Controllers
             return await _context.Fridges.ToListAsync();
         }
 
-        // GET: FridgeProduct
-        [HttpGet("GetFridgeProduct")]
+        // GET: FridgeProducts
+        [HttpGet("GetFridgeProducts")]
         [ActivatorUtilitiesConstructor]
         public async Task<IEnumerable<FridgeProduct>> GetFridgeProductAsync()
         {
@@ -44,23 +42,23 @@ namespace WebAPI.Controllers
         }
 
 
-        // POST: Product/Create
-        [HttpPost("PostProducts")]
+        // POST: FridgeProducts
+        [HttpPost("PostFridgeProducts")]
         [ActivatorUtilitiesConstructor]
-        public async Task<IActionResult> PostProductsAsync([Bind("Id,Name,DefaultQuantity")] Product product)
+        public async Task<IActionResult> PostFridgeProductsAsync([Bind("Id,ProductId,FridgeId,Quantity")] FridgeProduct fridgeProduct)
         {
-            _context.Add(product);
+            await _context.AddAsync(fridgeProduct);
             await _context.SaveChangesAsync();
-            return Ok(product);
+            return Ok(fridgeProduct);
         }
 
-        // POST: Product/Delete/5
-        [HttpDelete("DeleteProducts"), ActionName("Delete")]
+        // DELETE: Products
+        [HttpDelete("DeleteFridgeProducts"), ActionName("Delete")]
         [ActivatorUtilitiesConstructor]
         public async Task<IActionResult> DeleteProductsAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
+            var product = await _context.FridgeProducts.FindAsync(id);
+            _context.FridgeProducts.Remove(product);
             await _context.SaveChangesAsync();
             return Ok(id);
         }
