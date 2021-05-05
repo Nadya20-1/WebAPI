@@ -30,18 +30,16 @@ namespace WebAPI.Controllers
 
         // GET: Fridge
         [HttpGet]
-        public async Task<IActionResult> GetFridge()
+        public async Task<ActionResult<IEnumerable<Fridge>>> GetFridge()
         {
-            var fridgeDBContext = _context.Fridges.Include(f => f.Model);
-            return await fridgeDBContext.ToListAsync();
+            return await _context.Fridges.ToListAsync();
         }
 
         // GET: FridgeProduct
         [HttpGet]
-        public async Task<IActionResult> GetFridgeProduct()
+        public async Task<ActionResult<IEnumerable<FridgeProduct>>> GetFridgeProduct()
         {
-            var fridgeDBContext = _context.FridgeProducts.Include(f => f.Fridge).Include(f => f.Product);
-            return await fridgeDBContext.ToListAsync();
+            return await _context.FridgeProducts.ToListAsync();
         }
 
 
@@ -50,17 +48,13 @@ namespace WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostProducts([Bind("Id,Name,DefaultQuantity")] Product product)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction();
-            }
+            _context.Add(product);
+            await _context.SaveChangesAsync();
             return Ok(product);
         }
 
         // POST: Product/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpDelete, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProducts(int id)
         {
@@ -73,23 +67,12 @@ namespace WebAPI.Controllers
         // POST: Fridge
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
+        public async Task<IActionResult> UpdateFridge([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
         {
-            if (id != fridge.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                _context.Update(fridge);
-                await _context.SaveChangesAsync();
-                return RedirectToAction();
-            }
-            ViewData["ModelId"] = new SelectList(_context.FridgeModels, "Id", "Id", fridge.ModelId);
+            _context.Update(fridge);
+            await _context.SaveChangesAsync();
             return Ok(fridge);
         }
-
 
     }
 }
