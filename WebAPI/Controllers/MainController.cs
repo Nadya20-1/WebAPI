@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
@@ -15,29 +18,27 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class MainController : ControllerBase
     { 
-        private readonly ILogger<MainController> _logger;
         private readonly FridgeDBContext _context;
+        private IOptions<DbConnection> _connectionSettings;
 
-        public MainController(FridgeDBContext context)
+        public MainController(FridgeDBContext context, IOptions<DbConnection> connectionSettings)
         {
             _context = context;
-        }
-
-        public MainController(ILogger<MainController> logger)
-        {
-            _logger = logger;
+            _connectionSettings = connectionSettings;
         }
 
         // GET: Fridge
         [HttpGet("GetFridge")]
-        public async Task<ActionResult<IEnumerable<Fridge>>> GetFridgeAsync()
+        [ActivatorUtilitiesConstructor]
+        public async Task<IEnumerable<Fridge>> GetFridgeAsync()
         {
             return await _context.Fridges.ToListAsync();
         }
 
         // GET: FridgeProduct
         [HttpGet("GetFridgeProduct")]
-        public async Task<ActionResult<IEnumerable<FridgeProduct>>> GetFridgeProductAsync()
+        [ActivatorUtilitiesConstructor]
+        public async Task<IEnumerable<FridgeProduct>> GetFridgeProductAsync()
         {
             return await _context.FridgeProducts.ToListAsync();
         }
@@ -45,6 +46,7 @@ namespace WebAPI.Controllers
 
         // POST: Product/Create
         [HttpPost("PostProducts")]
+        [ActivatorUtilitiesConstructor]
         public async Task<IActionResult> PostProductsAsync([Bind("Id,Name,DefaultQuantity")] Product product)
         {
             _context.Add(product);
@@ -54,16 +56,18 @@ namespace WebAPI.Controllers
 
         // POST: Product/Delete/5
         [HttpDelete("DeleteProducts"), ActionName("Delete")]
+        [ActivatorUtilitiesConstructor]
         public async Task<IActionResult> DeleteProductsAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-            return RedirectToAction();
+            return Ok(id);
         }
 
-        // POST: Fridge
-        [HttpPost("UpdateFridge")]
+        // PUT: Fridge
+        [HttpPut("UpdateFridge")]
+        [ActivatorUtilitiesConstructor]
         public async Task<IActionResult> UpdateFridgeAsync([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
         {
             _context.Update(fridge);
