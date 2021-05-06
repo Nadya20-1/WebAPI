@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Repository;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -31,6 +32,8 @@ namespace WebAPI
             services.AddDbContext<FridgeDBContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IPOSTService, POSTService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });

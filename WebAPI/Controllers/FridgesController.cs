@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,9 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.DTO;
 using WebAPI.Repository;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -19,10 +22,14 @@ namespace WebAPI.Controllers
     public class FridgesController : ControllerBase
     { 
         private readonly FridgeDBContext _context;
+        private readonly IPOSTService _service;
+        private readonly IMapper _mapper;
 
-        public FridgesController(FridgeDBContext context)
+        public FridgesController(FridgeDBContext context, IMapper mapper, IPOSTService service)
         {
             _context = context;
+             _mapper = mapper;
+            _service = service;
         }
 
         // GET: Fridge
@@ -41,14 +48,22 @@ namespace WebAPI.Controllers
             return await _context.FridgeProducts.ToListAsync();
         }
 
+        //// POST: FridgeProducts
+        //[HttpPost("PostFridgeProducts")]
+        //[ActivatorUtilitiesConstructor]
+        //public async Task<IActionResult> PostFridgeProductsAsync([Bind("Id,ProductId,FridgeId,Quantity")] FridgeProduct fridgeProduct)
+        //{
+        //    await _context.AddAsync(fridgeProduct);
+        //    await _context.SaveChangesAsync();
+        //    return Ok(fridgeProduct);
+        //}
+
         // POST: FridgeProducts
         [HttpPost("PostFridgeProducts")]
         [ActivatorUtilitiesConstructor]
-        public async Task<IActionResult> PostFridgeProductsAsync([Bind("Id,ProductId,FridgeId,Quantity")] FridgeProduct fridgeProduct)
+        public async Task<IActionResult> PostFridgeProductsAsync([Bind("Id,ProductId,FridgeId,Quantity")] POSTFridgeProducts addFridgeProducts)
         {
-            await _context.AddAsync(fridgeProduct);
-            await _context.SaveChangesAsync();
-            return Ok(fridgeProduct);
+            return Ok(await _service.CreateFridgeProducts(addFridgeProducts));
         }
 
         // DELETE: Products
@@ -63,13 +78,21 @@ namespace WebAPI.Controllers
         }
 
         // PUT: Fridge
+        //[HttpPut("UpdateFridge")]
+        //[ActivatorUtilitiesConstructor]
+        //public async Task<IActionResult> UpdateFridgeAsync([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
+        //{
+        //    _context.Update(fridge);
+        //    await _context.SaveChangesAsync();
+        //    return Ok(fridge);
+        //}
+
+        // PUT: Fridge
         [HttpPut("UpdateFridge")]
         [ActivatorUtilitiesConstructor]
-        public async Task<IActionResult> UpdateFridgeAsync([Bind("Id,Name,OwnerName,ModelId")] Fridge fridge)
+        public async Task<IActionResult> UpdateFridgeAsync([Bind("Id,Name,OwnerName,ModelId")] PUTFridge fridge)
         {
-            _context.Update(fridge);
-            await _context.SaveChangesAsync();
-            return Ok(fridge);
+            return Ok(await _service.UpadateFridge(fridge));
         }
     }
 }

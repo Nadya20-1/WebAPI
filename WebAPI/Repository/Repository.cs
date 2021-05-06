@@ -21,19 +21,22 @@ namespace WebAPI.Repository
 
         public async Task<T> AddAsync(T entity)
         {
-            await _context.Set<T>().AddAsync(entity);
+            await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
-        public async Task UpdateAsync(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
-            _context.Set<T>().Update(entity);
+            _context.Update(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
-        public async Task DeleteAsync(T entity)
+        public async Task<int> DeleteAsync(int id)
         {
-            _context.Set<T>().Remove(entity);
+            var product = await _context.FridgeProducts.FindAsync(id);
+            _context.FridgeProducts.Remove(product);
             await _context.SaveChangesAsync();
+            return id;
         }
     }
 }
